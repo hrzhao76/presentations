@@ -61,6 +61,7 @@ duration: 45min
 
 fonts:
   sans: 'LXGW WenKai'
+routerMode: hash
 ---
 
 # Scalable Inference-as-a-Service for Scientific Workflows
