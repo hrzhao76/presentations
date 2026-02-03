@@ -1,0 +1,6 @@
+[submodule "References/EveNet-Presentation"]
+	path = References/EveNet-Presentation
+	url = https://github.com/AvencastF/EveNet-Presentation.git
+[submodule "References/talks"]
+	path = References/talks
+	url = https://github.com/BaizeAI/talks.git
