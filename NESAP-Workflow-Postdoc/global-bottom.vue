@@ -14,12 +14,12 @@
 
       <!-- 中 -->
       <div class="text-center">
-        Seminar
+        NESAP Seminar
       </div>
 
       <!-- 右 -->
       <div class="text-right">
-        {{ $slidev.nav.currentPage }}
+        {{ $slidev.nav.currentPage }} / {{ $slidev.nav.total }}
       </div>
     </div>
   </footer>
