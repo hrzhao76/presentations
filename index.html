@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Physicist's Slides | Presentations</title>
+    <style>
+        :root {
+            --bg: #0a0a0c;
+            --text: #e0e0e0;
+            --accent: #4f46e5;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 0;
+        }
+        .container {
+            position: relative;
+            z-index: 1;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            padding: 3rem;
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 500px;
+        }
+        h1 {
+            font-weight: 200;
+            letter-spacing: 2px;
+            margin-bottom: 2rem;
+            text-align: center;
+            background: linear-gradient(to right, #fff, #6366f1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            margin: 1rem 0;
+        }
+        a {
+            display: block;
+            padding: 1rem 1.5rem;
+            color: var(--text);
+            text-decoration: none;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid transparent;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+        a:hover {
+            background: rgba(99, 102, 241, 0.1);
+            border-color: var(--accent);
+            transform: translateX(10px);
+        }
+        .tag {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #888;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <div class="container">
+        <span class="tag">Research & Engineering</span>
+        <h1>Presentations</h1>
+        <ul>
+            <li>
+                <a href="./NESAP-Workflow-Postdoc/">
+                    <strong>NESAP Workflow Postdoc</strong>
+                    <div style="font-size: 0.8rem; color: #888; margin-top: 4px;">NERSC Postdoctoral Fellowship Interview</div>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function init() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            for(let i=0; i<80; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    vx: (Math.random() - 0.5) * 0.5,
+                    vy: (Math.random() - 0.5) * 0.5,
+                    size: Math.random() * 2
+                });
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'rgba(99, 102, 241, 0.5)';
+            particles.forEach(p => {
+                p.x += p.vx;
+                p.y += p.vy;
+                if(p.x < 0 || p.x > canvas.width) p.vx *= -1;
+                if(p.y < 0 || p.y > canvas.height) p.vy *= -1;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            requestAnimationFrame(animate);
+        }
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        init();
+        animate();
+    </script>
+</body>
+</html>

@@ -1,0 +1,94 @@
+name: Deploy pages
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [master]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+
+      # Explicitly use pnpm to avoid any environment ambiguity
+      - uses: pnpm/action-setup@v3
+        with:
+          version: 9
+
+      - name: Install Slidev CLI Globally
+        # This ensures 'slidev' command is available for folders without package.json
+        run: pnpm add -g @slidev/cli playwright-core
+
+      - name: Build all presentations
+        run: |
+          set -euo pipefail
+
+          rm -rf site
+          mkdir -p site
+
+          for dir in */ ; do
+            dir="${dir%/}"
+            
+            # Skip non-target directories
+            if [ "$dir" == "site" ] || [[ "$dir" == .* ]]; then continue; fi
+            
+            if [ -f "$dir/slides.md" ]; then
+              echo "🚀 Building Slidev project: ${dir}"
+              target_dir="../site/${dir}"
+              
+              (
+                cd "$dir"
+                # If you have a package.json, we respect its specific dependencies
+                if [ -f "package.json" ]; then
+                  pnpm install
+                  pnpm exec slidev build --base "/${{ github.event.repository.name }}/${dir}/" --out "$target_dir"
+                else
+                  # Direct build using global CLI for simple md files
+                  slidev build --base "/${{ github.event.repository.name }}/${dir}/" --out "$target_dir"
+                fi
+              )
+            fi
+          done
+
+          # Integrate your cool physicist-themed landing page
+          if [ -f "index.html" ]; then
+            echo "✅ Copying index.html to site root"
+            cp index.html site/index.html
+          fi
+
+      - name: Setup Pages configuration
+        uses: actions/configure-pages@v4
+
+      - name: Upload build artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    needs: build
+    runs-on: ubuntu-latest
+    name: Deploy
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
